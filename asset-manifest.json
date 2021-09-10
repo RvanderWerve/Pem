@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/RvanderWerve/Pem/static/css/main.3618e83d.chunk.css",
+    "main.js": "/RvanderWerve/Pem/static/js/main.a3e98696.chunk.js",
+    "main.js.map": "/RvanderWerve/Pem/static/js/main.a3e98696.chunk.js.map",
+    "runtime-main.js": "/RvanderWerve/Pem/static/js/runtime-main.46250b62.js",
+    "runtime-main.js.map": "/RvanderWerve/Pem/static/js/runtime-main.46250b62.js.map",
+    "static/js/2.8a69510f.chunk.js": "/RvanderWerve/Pem/static/js/2.8a69510f.chunk.js",
+    "static/js/2.8a69510f.chunk.js.map": "/RvanderWerve/Pem/static/js/2.8a69510f.chunk.js.map",
+    "index.html": "/RvanderWerve/Pem/index.html",
+    "static/css/main.3618e83d.chunk.css.map": "/RvanderWerve/Pem/static/css/main.3618e83d.chunk.css.map",
+    "static/js/2.8a69510f.chunk.js.LICENSE.txt": "/RvanderWerve/Pem/static/js/2.8a69510f.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.46250b62.js",
+    "static/js/2.8a69510f.chunk.js",
+    "static/css/main.3618e83d.chunk.css",
+    "static/js/main.a3e98696.chunk.js"
+  ]
+}
