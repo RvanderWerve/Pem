@@ -12,9 +12,10 @@ const useFirestoreScenarios = (user, dceId) => {//Connect to firestore dB and ge
       .onSnapshot(snap => {
         let documents = [];
         snap.forEach(doc => {
-          documents.push({...doc.data(), id: doc.id});
+          documents.push({...doc.data()});
         });
         setScenarios(documents);
+        console.log("scenarios just set: "+JSON.stringify(documents))
       });
     return () => unsub();
     }
