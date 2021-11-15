@@ -8,10 +8,8 @@ const useStorage = (file ) => {//Connect to firebase storage for storing images
   const [url, setUrl] = useState(null);
 
 
-  useEffect(() => {
-    // references
+  useEffect(() => {//React hook for storing a file and returning its url. Sets progress indicator while loading
     const storageRef = pemStorage.ref(file.name);
-    
     storageRef.put(file).on('state_changed', (snap) => {
       let percentage = (snap.bytesTransferred / snap.totalBytes) * 100;
       setProgress(percentage);
@@ -21,7 +19,7 @@ const useStorage = (file ) => {//Connect to firebase storage for storing images
       const url = await storageRef.getDownloadURL();
       setUrl(url);
     });
-  }, [file]);
+  }, [file]);//triggers upon file
 
   return { progress, url, error };
 }

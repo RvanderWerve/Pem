@@ -3,19 +3,17 @@ import Select from 'react-select'
 
 const useNewDceHtml =( inputProps, groupProps, miscProps, newDce )=> {
    // creates html for formsfields and buttons for the NewDce component
-const {handleEntry, handleDescrInputChange, handleInputChange, handleRemoveClick, handleNrQuestionsInput, inputList} = inputProps;
+const {handleEntry, handleInputChange, handleRemoveClick, handleNrQuestionsInput, inputList} = inputProps;
 const {setGroupValue, groupChecked, groupValue, handleCheckbox} = groupProps;
 const {handleAddClick,  saveDce,  nrQuestions} = miscProps;
 const [dceHtml, setDceHtml] = useState([]);
 
  
-useEffect(()=>{
+useEffect(()=>{//React hook for creating html for new dce
 let tempHtml = [];
-
   const options = inputList&&inputList.map((x, i)=>{
     return {label: x.featureName, value: x.featureName}
   })
-
 tempHtml.push(
         <div key="i">
             <form className="form-inline" key="form">

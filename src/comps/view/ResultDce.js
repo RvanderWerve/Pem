@@ -13,8 +13,9 @@ export default function ResultDce({currentDce, dceId, userId}) {
 
     return (
         <div key="main">
-           <div key="title" className="mb-5"><h3>Total results from all particpants: </h3>
-            {resultHtml}</div>
+            {!currentDce.id&&<div><h3>Click on <i className="material-icons mt-1  btn-outline-danger">poll</i> in the dce list for results.</h3> <h5>(only available for grouped dce's)</h5></div> }
+           {currentDce.id&&<div key="title" className="mb-5"><h3>Total results from all particpants: </h3>
+            {resultHtml}</div>}
            
         </div>
     )

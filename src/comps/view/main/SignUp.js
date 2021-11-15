@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { pemAuth, signInWithGoogle, generateUserDocument } from "../../../firebase/config";
 
-const SignUp = () => { //Sign up page. Either via mail address or Google account
+const SignUp = () => { //Sign up page. Register either via mail address or Google account
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");

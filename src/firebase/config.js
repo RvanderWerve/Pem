@@ -17,7 +17,7 @@ import 'firebase/auth';
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
 
- 
+ //firebase ref variables
 const pemStorage = firebase.storage();
 const pemFirestore = firebase.firestore();
 const timestamp = firebase.firestore.FieldValue.serverTimestamp;
@@ -28,6 +28,8 @@ const provider = new firebase.auth.GoogleAuthProvider();
 export const signInWithGoogle = () => {
   pemAuth.signInWithPopup(provider);
 };
+
+//method for generating user document
 export const generateUserDocument = async (user, additionalData) => {
   if (!user) return;
 
@@ -50,6 +52,7 @@ export const generateUserDocument = async (user, additionalData) => {
   return getUserDocument(user.uid);
 };
 
+//method for retrieving user document
 const getUserDocument = async uid => {
   if (!uid) return null;
   try {

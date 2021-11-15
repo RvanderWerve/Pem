@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react'
 export default function List({currentDce, refreshListFlag, setCurrentAsp, deleteAspect}) {
 const [listHtml, setListHtml] = useState([]);
 
-    useEffect(()=>{
+    useEffect(()=>{//React hook for generating the html for displaying the list of aspects
         let tempList = [];
-        currentDce.aspectList&& currentDce.aspectList.map((aspect, i)=>{
-tempList.push(<div className="">
+        currentDce.aspectList&& currentDce.aspectList.forEach((aspect, i)=>{
+tempList.push(<div key={`aspectList ${i}`} className="">
 <h6 className="mt-3">
     <li  key={i} className="listRuler mb-1"  data-id={aspect.id}> <b>{aspect.name}</b>
         <hr className="ruler"/> 
@@ -19,7 +19,7 @@ tempList.push(<div className="">
 )
         })
  setListHtml(tempList);
-    },[currentDce, refreshListFlag])
+    },[currentDce, refreshListFlag])//gets re-rendered when flag is changed
 
     //Component for displaying aspect list
     return (

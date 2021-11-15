@@ -10,7 +10,7 @@ const UploadForm = ({ dceId, scNr, setUrl }) => { //Component for uploading imag
   //handle selected file
   const handleChange = (e) => {
     let selected = e.target.files[0];
-    if (selected && types.includes(selected.type)) {
+    if (selected && types.includes(selected.type)) {//ensure file type is png or jpeg
       setFile(selected);
       setError('');
     } else {
@@ -19,7 +19,7 @@ const UploadForm = ({ dceId, scNr, setUrl }) => { //Component for uploading imag
     }
   };
 
-  //Html to show in browser
+  //Html to show in browser. Show progressbar while loading
   return (
     <div>
       <label>

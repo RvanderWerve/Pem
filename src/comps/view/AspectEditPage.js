@@ -1,59 +1,34 @@
-import React, {useState} from 'react';
-import { useLocation} from "react-router-dom";
+import React from 'react';
 import useAspectEditHtml from './useAspectEditHtml';
 import Filter from '../model/filter'
 
-export default function AspectEditPage({currentDce, currentAsp, showAspectsFlag, setCurrentDce, setCurrentAsp, filterSaved, setFilterSaved, aspectProps, editFunctions, editProps}) {
-//Component for editing an aspect
+export default function AspectEditPage({currentDce, currentAsp, showAspectsFlag, setCurrentDce, setCurrentAsp, filterSaved, setFilterSaved, editFunctions }) {
+//Component for editing an aspect 
 
-    // const [filterSaved, setFilterSaved] = useState(false)
-    const location = useLocation();
-    const dceFeatures = location.dceFeatures;
-    const groupFeature = location.groupFeature;
-    const {saveFilters, setAgeGenderValues, setGroupValues, setChosenFeatures, handleAddCombi, handleDeleteCombi} = editFunctions
-    const {aspectId, aspectFilters} = aspectProps;
-    const {groupValues, chosenFeatures, ageGenderValues } = editProps;
+    const {saveFilters, handleAddCombi, handleDeleteCombi} = editFunctions
 
-    // if(groupFeature===undefined){//if groupfeature is undefined, go to main page
-    //     history.push('/');
-    // }
    
-    //Handles feature name from form
+    //Handles feature name input from form
     const handleFName = (fName, cIndex, index)=>{
-        // const chosenList = [...chosenFeatures];
-        // chosenList[cIndex][0]={fName: fName};
         const tempCombiList = [...currentAsp.combiList];
         tempCombiList[cIndex].filterList[index]["fName"]= fName;
         setCurrentAsp(currentAsp=>({...currentAsp, combiList: tempCombiList}));
-        // const tempSavedList = [...filterSaved];
-        // tempSavedList[cIndex]=false;
-        // setChosenFeatures(chosenList);
         setFilterSaved(false);
     }
 
-    //Handles feature value from form
+    //Handles feature value input from form
     const handleFValue = (fValue, cIndex, index) =>{
-        // const chosenList = [...chosenFeatures];
-        // chosenList[cIndex][0]['fValue'] = fValue;
         const tempCombiList = [...currentAsp.combiList];
         tempCombiList[cIndex].filterList[index]["fValue"]= fValue;
         setCurrentAsp(currentAsp=>({...currentAsp, combiList: tempCombiList}));
-        // const tempSavedList = [...filterSaved];
-        // tempSavedList[cIndex]=false;
-        // setChosenFeatures(chosenList);
         setFilterSaved(false);
     }
     
-    //Handles value for group feature selected in form
+    //Handles value for selected group feature in form
     const handleGroupValue = (value, cIndex)=>{
-        // let tempGValues = [...groupValues]
-        // tempGValues[cIndex]=value;
         const tempCombiList = [...currentAsp.combiList];
         tempCombiList[cIndex].groupValue=value;
         setCurrentAsp(currentAsp=>({...currentAsp, combiList: tempCombiList}));
-        // const tempSavedList = [...filterSaved];
-        // tempSavedList[cIndex]=false;
-        // setGroupValues(tempGValues);
         setFilterSaved(false);
         }
  
@@ -71,27 +46,8 @@ export default function AspectEditPage({currentDce, currentAsp, showAspectsFlag,
             setFilterSaved(false);
         }
 
-    // //Checks if all required fields are filled in and then saves to database.
-    // const handleSave = (e)=>{
-    //     e.preventDefault();
-    //     const cIndex = e.target.dataset.id;
-    //     let tempList = [...aspectFilters[cIndex],...chosenFeatures[cIndex]];
-    //     let tempChosen = [...chosenFeatures];
-    //     if(tempChosen[cIndex][0]&&tempChosen[cIndex][0]['fName'].length>0&&!tempChosen[cIndex][0]['fValue']){
-    //         alert("Select a value for the filter feature before saving")
-    //     }else{
-    //     tempChosen[cIndex] = [];
-    //     if (groupValues[cIndex].length===0){
-    //         alert("Select a value for the Group feature before saving")
-    //         } else{
-    //         saveFilters(cIndex, tempList, tempChosen, groupValues, ageGenderValues);
-    //         const tempSavedList = [...filterSaved];
-    //         tempSavedList[cIndex]=true;
-    //         setFilterSaved(tempSavedList);
-    //         }
-    //     }
-    // }
-//Deletes a filter
+   
+//Deletes a filter from the current aspect
     const handleDelete = (e, index, cIndex)=>{
         e.preventDefault();
         const tempCombiList = [...currentAsp.combiList];
@@ -100,6 +56,7 @@ export default function AspectEditPage({currentDce, currentAsp, showAspectsFlag,
         setFilterSaved(false);
       }
 
+//Adds a new empty filter to the currently loaded aspect
     const handleAddFilter = (e, cIndex)=>{
         e.preventDefault();
         const tempCombiList = [...currentAsp.combiList];
@@ -108,26 +65,24 @@ export default function AspectEditPage({currentDce, currentAsp, showAspectsFlag,
         setFilterSaved(false);
     }
 
-    //Loads html for displaying aspects and edit forms
-    // const handleProps = {  handleSave};
-    const valueProps = {   groupFeature,   dceFeatures, filterSaved};
-    const {fromDb} = useAspectEditHtml(currentDce, currentAsp, showAspectsFlag, handleFName, handleFValue, handleGroupValue, handleAgeGenderValue, handleDelete, handleAddFilter, handleAddCombi, handleDeleteCombi, saveFilters, valueProps);  
+//Loads html for displaying aspects and editing forms
+    const {editHtml} = useAspectEditHtml(currentDce, currentAsp, showAspectsFlag, handleFName, handleFValue, handleGroupValue, handleAgeGenderValue, handleDelete, handleAddFilter, handleAddCombi, handleDeleteCombi, saveFilters);  
 
-//Button for adding a combination filter button
+//Button for adding a combination filter
 let addCombiButton = [];
-   if(!currentAsp.dummy&&!Object.keys(currentAsp).length===0){
+   if(!currentAsp.dummy&&!Object.keys(currentAsp).length===0){//only add if an aspect is loaded as current 
        addCombiButton.push(
         <button className="btn btn-sm btn-outline-info my-4" onClick={handleAddCombi}>add combination feature</button>
         )
 }
 
-//returns html to the browser
+//returns html to the browser, including name and descr of aspect. Alternative text if name is unavailable
     return (
         <div>
             <h4 className="mb-1">Define aspect for <b>{currentAsp.name||"(Select an aspect..)"}</b></h4>
             <h6 className="text-secondary pb-3">Description: {currentAsp.descr}</h6>     
-              {!currentAsp.dummy&&fromDb}
-              {/* {addCombiButton} */}
+              {!currentAsp.dummy&&editHtml}
+              {filterSaved&&<h6>Filters saved</h6>}
         </div>
     )
 }

@@ -3,17 +3,13 @@ import { UserContext } from "../../providers/UserProvider";
 import { Link } from "react-router-dom";
 import ResultDce from "./ResultDce";
 import useGetDceList from "../model/useGetDceList";
-// import useGetDceDetails from "./useGetDceDetails";
 
  export default function DcePlayListPage({dceList}) { // Shows list of dce's with icons for running them or see results (for grouped dce's)
       
-    const [dceSelectEvent, setDceSelectEvent] = useState(null);
     const user = useContext(UserContext);
     const uid = user.uid;
     const [currentDce, setCurrentDce] = useState({});
-    dceList.list = useGetDceList(uid);
-    // const {dceFeatures, dceId, dceDetails} = useGetDceDetails(dceSelectEvent, uid);
-
+    dceList.list = useGetDceList(uid);//loads the list of dce's
 
 
   //html to show in browser

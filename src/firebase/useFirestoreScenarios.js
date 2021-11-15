@@ -2,11 +2,11 @@ import {  useState, useEffect } from 'react';
 import { pemFirestore } from './config';
 
 
-const useFirestoreScenarios = (user, dceId) => {//Connect to firestore dB and get scenario's and return them as array
+const useFirestoreScenarios = (user, dceId) => {//Load scenario's from firestore db and return them as array for the App component (running the dce)
   const [scenarios, setScenarios] = useState([]);
 
 
-  useEffect(() => {
+  useEffect(() => {//React hook for getting the scenario's from the db when user and dceId are known
     if(user&& dceId){
     const unsub = pemFirestore.collection('users').doc(user).collection('DceList').doc(dceId).collection('Scenarios')
       .onSnapshot(snap => {

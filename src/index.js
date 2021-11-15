@@ -5,6 +5,7 @@ import './css/materialize.css';
 import './index.css';
 import MainApp from './comps/view/main/MainApp';
 
+//main page that triggers all react files and imports css
 ReactDOM.render(
   <React.StrictMode>
     <MainApp />

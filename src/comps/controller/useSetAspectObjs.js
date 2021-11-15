@@ -6,7 +6,7 @@ export default function useSetAspectObjs(userId, dceId, currentDce) {
     const [aspectObjs, setAspectObjs] = useState([]);
     const dceFeatures = currentDce.features;
 
-    useEffect(() => {
+    useEffect(() => {//create functional filters after loading aspects from database. Loading from database is still unchanged from old setup before object oriented design.
         if(userId&&dceId&&currentDce){
         let tempAspectObjs = [];
         setAspectObjs(tempAspectObjs);//ensure AspectObjects are empty
@@ -27,12 +27,12 @@ export default function useSetAspectObjs(userId, dceId, currentDce) {
                         againstFilters.push(...tempFilter.filterList);
                         let newFavorFilter = {fName: currentDce.groupFeature, fValue: snap.data().groupValue};//include groupfeature as favorfilter
                         if(snap.data().ageGender){
-                            if(snap.data().ageGender.age!==""){
+                            if(snap.data().ageGender.age!==""){//if age string is not empty create agefilter
                         let ageFilter = {fName: "age", fValue: snap.data().ageGender.age};
                         favorFilters.push(ageFilter);
                         againstFilters.push(ageFilter);
                     }
-                    if(snap.data().ageGender.gender!==""){
+                    if(snap.data().ageGender.gender!==""){//if gender string is not empty create gender filter
                         let genderFilter = {fName: "gender", fValue: snap.data().ageGender.gender};
                         favorFilters.push(genderFilter);
                         againstFilters.push(genderFilter);
@@ -64,9 +64,6 @@ export default function useSetAspectObjs(userId, dceId, currentDce) {
         })
         return
     }},[userId, dceId, currentDce])
-
-
-
 
     return {aspectObjs};
 }

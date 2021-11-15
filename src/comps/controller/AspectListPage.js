@@ -10,31 +10,23 @@ import AspectEditPage from "../view/AspectEditPage";
 
 
 export default function AspectListPage({currentDce, dceId, currentAsp, setCurrentDce, setCurrentAsp}) {
+    //Main component for displaying the list of aspects. It includes functionality for adding, deleting, modifying and saving.
     const user = useContext(UserContext);
     const userId = user.uid;
     const [showAspectsFlag, setShowAspectsFlag] = useState('');
     const [refreshListFlag, setRefreshListFlag] = useState('');
     const [filterSaved, setFilterSaved] = useState(false)
-    const [chosenFeatures, setChosenFeatures] = useState([]);
-    const [aspectFilters, setAspectFilters] = useState([]);
-    const [groupValues, setGroupValues] = useState([]);
-    const [ageGenderValues, setAgeGenderValues] = useState([{age: "", gender: ""}]);
     const [showNew, setShowNew] = useState(false);
-    const [aspectNameEdit, setAspectNameEdit] = useState('(Click on ICON in Aspect list)');
-    const [aspectDescr, setAspectDescr] = useState('');
-    const [aspectId, setAspectId] = useState('');
-
-
 
 
 //Saves all filters of all aspects of this dce to the database
 const saveFilters = ()=>{
     const aspectRef = pemFirestore.collection('users').doc(userId).collection('DceList').doc(dceId).collection('AspectList');
    console.log("aspectList in SaveFilters: "+JSON.stringify(currentDce.aspectList))
-    currentDce.aspectList.length>0&& currentDce.aspectList.forEach(aspect=>{
+    currentDce.aspectList.length>0&& currentDce.aspectList.forEach(aspect=>{//for each aspect save the various parts
         aspectRef.doc(aspect.id).update({ageGender: {age: aspect.ageGender.age, gender: aspect.ageGender.gender}});
         let combiRef = aspectRef.doc(aspect.id).collection('Combis');
-       aspect.combiList.length>0&&(aspect.combiList.forEach(combi=>{
+       aspect.combiList.length>0&&(aspect.combiList.forEach(combi=>{//for each combi save all filters
             const {filterList, ...restOfCombi} = combi;
             let dbFilterList = [];
             filterList.forEach(filter=>{
@@ -46,29 +38,26 @@ const saveFilters = ()=>{
             combiRef.doc(combi.nr.toString()).set(Object.assign({}, restOfCombi))
             .then(()=>{
                 console.log('combi saved with nr '+combi.nr);
+                setFilterSaved(true);//indicator for showing that aspects have been stored to database
             })
             .catch((error)=>{
                 console.log('Error saving combi', error);
             })
         }))
     })
-    // .then(()=>{
-    //     console.log("All filters saved");
-    //     setFilterSaved(true);
-    // })
 }
 
 
 
-const handleAddCombi = ()=>{
-    let newCombiNr = findFreeCombiNr();
+const handleAddCombi = ()=>{//adds new combi to the combilist and saves to db
+    let newCombiNr = findFreeCombiNr();//finds first available nr as combi id, so deleted nrs can be re-used
     let newCombi = new Combi(newCombiNr, "", []);
-    currentAsp.combiList.push(newCombi);
-    setCombi(newCombi);
-    setShowAspectsFlag("combi added"+newCombiNr)
+    currentAsp.combiList.push(newCombi);//adds the new empty combi to the combilist
+    setCombi(newCombi);//store to db
+    setShowAspectsFlag("combi added"+newCombiNr);//set flag to refresh combilist 
 }
 
-const findFreeCombiNr = ()=>{
+const findFreeCombiNr = ()=>{//finds first available nr as combi id from the combilist, so deleted nrs can be re-used
     let seqNr=0;
     currentAsp.combiList.sort((a,b)=>a.nr-b.nr).forEach(combi=>{
         if(combi.nr!==seqNr){//if seqNr is free, use it
@@ -97,18 +86,17 @@ const setCombi = (combi)=>{
 
 //Deletes a filter combination from the list and database
 const handleDeleteCombi = (e, cIndex)=>{
-    currentAsp.combiList.splice(cIndex, 1);
     pemFirestore.collection('users').doc(userId).collection('DceList').doc(dceId).collection('AspectList').doc(currentAsp.id).collection('Combis').doc(cIndex.toString())
     .delete().then(() => {
         console.log("Combination successfully deleted!");
-        setShowAspectsFlag("combi deleted"+cIndex);
-        // loadAspectData(aspectId);
+        currentAsp.combiList.splice(cIndex, 1);//only delete from list after successful deleting from db
+        setShowAspectsFlag("combi deleted"+cIndex);//set flag to refresh combilist - required new content to be seen as change.
     }).catch((error) => {
         console.error("Error removing document: ", error);
     });        
 }
 
-//delete a aspect from database and refresh list
+//delete a aspect from database and list
 const deleteAspect = (aspect) => {
     let aspectId =aspect.id;
     let aspIndex = currentDce.aspectList.findIndex(asp=>asp.id===aspectId);
@@ -123,30 +111,30 @@ const deleteAspect = (aspect) => {
     .then(()=>{
         aspectRef.delete()
     .then(() => {
-        currentDce.aspectList.splice(aspIndex, 1); //delete scenario from scList
+        currentDce.aspectList.splice(aspIndex, 1); //delete scenario from scList after db delete is successful
         console.log("Document with ID"+aspectId+ "  successfully deleted!");
-        setRefreshListFlag("set flag "+aspectId);
+        setRefreshListFlag("set flag "+aspectId);//set flag to refresh aspect list
     }).catch((error) => {
         console.error("Error removing document: ", error);
     });
-    if(currentAsp.id===aspectId){ //if aspectdetails of deleted aspect were shown on screen,  clear them
+    if(currentAsp.id===aspectId){ //if aspectdetails of deleted aspect were shown on screen,  replace with dummy
         setCurrentAsp({dummy: currentAsp.id})    
     }
   })
 }
 
-const addAspect = (name, descr)=>{
+const addAspect = (name, descr)=>{//adds aspect to the aspect list and database
     let aspectColl = pemFirestore.collection('users').doc(userId).collection('DceList').doc(dceId).collection('AspectList');
     aspectColl.add( {aspectName: name, aspectDescr: descr, ageGender: {age:"", gender:""}})
     .then((docRef)=>{
           console.log("Document written with ID: ", docRef.id);
           aspectColl.doc(docRef.id).collection('Combis').doc('0').set({nr: 0, groupValue: "", filterList: []});
-          let newCombiList = [new Combi(0, "", [])];
+          let newCombiList = [new Combi(0, "", [])];//new combi object with id:0 as it will be the first combi in the new aspect
           let ageGender = new AgeGender("",  "");
-          let newAspect = new Aspect(docRef.id, name, descr, ageGender, newCombiList);
+          let newAspect = new Aspect(docRef.id, name, descr, ageGender, newCombiList);//create new aspect object with new combi and ageGender objects
           currentDce.aspectList.push(newAspect);
           setCurrentAsp(newAspect);
-          setRefreshListFlag("new aspect saved id "+docRef.id);
+          setRefreshListFlag("new aspect saved id "+docRef.id);//set new content to flag to refresh aspect list
     })
     .catch((error) => {
         console.error("Error adding document: ", error);
@@ -160,16 +148,15 @@ const addAspect = (name, descr)=>{
       else if(!showNew){setShowNew(true)}
   }
 
-  const editFunctions = {saveFilters, setGroupValues, setAgeGenderValues, setChosenFeatures, handleAddCombi, handleDeleteCombi}
-  const editProps = {ageGenderValues, groupValues, chosenFeatures}
-  const aspectProps = {aspectId, aspectFilters}
+  const editFunctions = {saveFilters, handleAddCombi, handleDeleteCombi};//combine some functions needed for edit page
 
-  //html to show in browser
+  //html to show in browser. <List> returns list of aspect. <NewAspect> is component with form for creating new aspect
+  // <AspectEditPage> provides component for editing the aspect and displaying its details
     return (
     <div>   
         <div className="row my-4">
             <div className="listContainer col col-12 col-sm-3">
-                <List currentDce={currentDce} refreshListFlag={refreshListFlag} setCurrentAsp={setCurrentAsp} deleteAspect={deleteAspect}/>
+                <List currentDce={currentDce} refreshListFlag={refreshListFlag} setCurrentAsp={setCurrentAsp} deleteAspect={deleteAspect} />
                 <div className="row my-4">
                      <div className="col-auto  ">
                         <h4><u>Create new Aspect</u></h4>
@@ -181,7 +168,7 @@ const addAspect = (name, descr)=>{
             </div>
 
             <div className="col scenarioContainer">
-                <AspectEditPage currentDce={currentDce} currentAsp={currentAsp} showAspectsFlag={showAspectsFlag} setCurrentDce={setCurrentDce} setCurrentAsp={setCurrentAsp} filterSaved={filterSaved} setFilterSaved={setFilterSaved} aspectProps={aspectProps} editFunctions={editFunctions} editProps={editProps} />
+                <AspectEditPage currentDce={currentDce} currentAsp={currentAsp} showAspectsFlag={showAspectsFlag} setCurrentDce={setCurrentDce} setCurrentAsp={setCurrentAsp} filterSaved={filterSaved} setFilterSaved={setFilterSaved} editFunctions={editFunctions}  />
             </div>
         </div>
     </div>  

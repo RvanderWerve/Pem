@@ -8,15 +8,13 @@ class UserProvider extends Component {//Component to provide username via Contex
       user: null
     };
   
-        
+    //sets user when authenticated
     componentDidMount = async () => {
       pemAuth.onAuthStateChanged(async userAuth => {
         const user = await generateUserDocument(userAuth);
         this.setState({ user });
         console.log("User logged in");
       });
-  
-  
     };
   
     render() {

@@ -1,16 +1,13 @@
 import React, { useContext, useState } from "react";
 import { UserContext } from "../../providers/UserProvider";
-import { pemFirestore } from "../../firebase/config";
 import useNewDceHtml from "../view/useNewDceHtml";
 import Dce from '../model/dce';
 import GroupedDce from '../model/groupedDce';
 
-export default function NewDceForm({showNewDceForm, dceList, setDceListChanged, setCurrentDce}) {
+export default function NewDceForm({showNewDceForm, dceList, setDceListChanged }) {
   //component for creating a new dce including features and general details
 
     const [inputList, setInputList] = useState([{ featureName: null, featureValue1: null, featureValue2: null }]);
-    const [dceName, setDceName] = useState("");
-    const [dceDescr, setDceDescr] = useState([{dceDescr: ""}]);
     const [groupChecked, setGroupChecked] = useState(false);
     const [groupValue, setGroupValue] = useState(null);
     const [nrQuestions, setNrQuestions] = useState(0);
@@ -38,7 +35,7 @@ return true;
   const dceNotNull = ()=>{
     let name=newDce.name;
     console.log("field not null check, dceName: "+name)
-    if(name==="" || dceList.list.length>0 &&dceList.nameList().some(existsName)){
+    if(name===undefined||name==="" || (dceList.list.length>0 &&dceList.nameList().some(existsName))){
       alert("Fill in a unique DCE name");
       return false;
     }
@@ -65,54 +62,25 @@ return true;
           let dce;
                 if(groupChecked){
                 dce = new GroupedDce( null, newDce.name, newDce.descr, newDce.nrQuestions, inputList, groupChecked, groupValue, uid);
-                // dce = new GroupedDce(  null, dceName[0], dceDescr[0], nrQuestions, inputList, groupChecked, groupValue);
                 } else {
                     dce = new Dce( null, newDce.name, newDce.descr, newDce.nrQuestions, inputList, groupChecked, uid)
-                    // dce = new Dce( null, dceName[0], dceDescr[0], nrQuestions, inputList)
                 }
-            dceList.list.length>0&&dceList.addDce(dce)
-            .then(dceId=>{setDceListChanged(dceId);
+            dceList.list&&dceList.addDce(dce)//method that adds the newly created dce to the dceList and database
+            .then(dceId=>{setDceListChanged(dceId);//flag to refresh dce list on screen
               console.log("return dceId: "+dceId);
-              setCurrentDce(dce);
-            });
+              });
 
-          // let dceColl = pemFirestore.collection('users').doc(uid).collection('DceList');
-          // dceColl.add({name: dceName[0], descr: dceDescr[0], features: inputList, nrFeatures: inputList.length, grouped: groupChecked, groupFeature: groupValue, nrQuestions: nrQuestions})
-          // .then((docRef)=>{
-          //       console.log("Document written with ID: ", docRef.id);
-          //       setDceListChanged(docRef.id);
-          // })
-          // .catch((error) => {
-          //     console.error("Error adding document: ", error);
-          // });
-          showNewDceForm();
+            showNewDceForm();
         }
     }
 
  
-
-    // handle descr input change
-    const handleDescrInputChange = (e) => {
-      e.preventDefault();
-      const {name, value} = e.target;
-      const tempDcs = {...newDce};
-      console.log("tempDce: "+JSON.stringify(tempDcs))
-      tempDcs[name]=value;
-      console.log("tempDce: "+JSON.stringify(tempDcs))
-      setNewDce(newDce=>({...newDce, [name]: value}));
-        }
     
         //Handles entries from input fields
     const handleEntry = (e)=>{
       e.preventDefault();
       const {name, value} = e.target;
-      console.log(" tempdce newDce: "+JSON.stringify(newDce))
-      // const tempDcs = {...newDce, [name]: value};
-      // console.log("tempDce: "+JSON.stringify(tempDcs))
-      // tempDcs[name]=value;
-      // console.log("tempDce: "+JSON.stringify(tempDcs))
       setNewDce(newDce=>({...newDce, [name]: value}));
-      // setDceName(value);
   }
 
     // handle nr questions input change
@@ -121,10 +89,9 @@ return true;
       let nrQuestions = 'nrQuestions'
       const nrString = e.target.value;
       let nrQ = 0;
-      nrQ = Number(nrString);
-      setNrQuestions(nrQ);
-      setNewDce(newDce=>({...newDce, [nrQuestions]: nrQ}));
-
+      nrQ = Number(nrString);//converts input to nr
+      setNrQuestions(nrQ);//sets nr questions for this dce
+      setNewDce(newDce=>({...newDce, [nrQuestions]: nrQ}));//adds nr questions to the new dce
     }
 
      // handle feature input change
@@ -150,14 +117,13 @@ return true;
     setInputList([...inputList, { featureName: null , featureValue1: null, featureValue2: null}]);
   }
 
-  // checkbox for group feature 
+  // checkbox for group feature.Inverts value
   const handleCheckbox = ()=>{
-    // e.preventDefault();
-    // const { checked} = e.target;
-    setGroupChecked(!groupChecked);
+   setGroupChecked(!groupChecked);
   }
 
-  const inputProps =  {handleEntry, handleDescrInputChange, handleInputChange, handleRemoveClick, handleNrQuestionsInput, inputList};
+  //combine some of the properties that are required for getting the html
+  const inputProps =  {handleEntry, handleInputChange, handleRemoveClick, handleNrQuestionsInput, inputList};
   const groupProps = {setGroupValue, groupChecked, groupValue, handleCheckbox};
   const miscProps = {handleAddClick,  saveDce,  nrQuestions};
 

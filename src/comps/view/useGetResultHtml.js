@@ -5,7 +5,7 @@ export default function useGetResultHtml(aspectObjs, results) {
  
     const [resultHtml, setResultHtml] = useState([]);
 
-    useEffect(() => {
+    useEffect(() => {//React hook for creating html to display graphic results of selected dce
         let tempResult = [];
         tempResult.push(
             <div key="head">
@@ -67,12 +67,12 @@ export default function useGetResultHtml(aspectObjs, results) {
                 <span key={`asp-desc ${i}`} className="text-secondary">{aspectDescr}</span><br/>
                 <div key={`clNames ${i}`} className={clNames}>
                 <div key={`pg-bar-pt1 ${i}`} className="progress-bar bg-light-grey" role="progressbar" style={{width: 50+"%"}} aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                {prob===0&&<div key={`pg-bar-pt2 ${i}`} class="progress-bar bg-teal" role="progressbar" style={{width: 2 +"px"}} aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>}
+                {prob===0&&<div key={`pg-bar-pt2 ${i}`} className="progress-bar bg-teal" role="progressbar" style={{width: 2 +"px"}} aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>}
                 <div key={`pg-bar-pt3 ${i}`} className={barClasses} role="progressbar" aria-valuenow={prob} aria-valuemin="0" aria-valuemax="100" style={{width:graphProb+"%"}}>
-                {(prob>=0.2||prob<=-0.2)&&<span key={`pg-title ${i}`} className="sr-only">&Delta; P = {prob.toFixed(2)}</span>}
+                {(prob>=0.4||prob<=-0.4)&&<span key={`pg-title ${i}`} className="sr-only">&Delta; P = {prob.toFixed(2)}</span>}
                 </div>
                 </div>
-                {(prob<0.2&&prob>-0.2)&&<div key={`pg-desc ${i}`}>&Delta; P = {prob.toFixed(2)}</div>}
+                {(prob<0.4&&prob>-0.4)&&<div key={`pg-desc ${i}`}>&Delta; P = {prob.toFixed(2)}</div>}
                 <span key={`pg-desc2 ${i}`}>(Chosen {(100*prob).toFixed(0)}% {prob<0 ? "less": "more"} than the opposite.)</span>
 
             </div>)
@@ -82,7 +82,7 @@ export default function useGetResultHtml(aspectObjs, results) {
             setResultHtml([<div><h5>No aspects defined.</h5></div>])
         }
         return 
-    }, [aspectObjs, results])
+    }, [aspectObjs, results])//rerender when aspect objects or results change
 
 
    const graphReverse = (prob)=>{// Set className to get reverse direction in case of negative number

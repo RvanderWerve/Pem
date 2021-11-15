@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { signInWithGoogle } from "../../../firebase/config";
 import { pemAuth } from "../../../firebase/config";
 
-const SignIn = () => {//Sign in page
+const SignIn = () => {//Sign in page. Provides methodes for signing in with email or google
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);

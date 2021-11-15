@@ -3,10 +3,9 @@ import { UserContext } from "../../providers/UserProvider";
 import { pemFirestore } from "../../firebase/config";
 import useScenarioDetailsHtml from "../view/useScenarioDetailsHtml";
 
-export default function ScenarioDetails({currentDce, dceId, currentSc, setCurrentSc, scList, scProps, chosen, setChosen}) {
+export default function ScenarioDetails({currentDce, dceId, currentSc, setCurrentSc, handleAddScenario, setIsSaved, isSaved}) {
 //Component for adding a new scenario
 
-    const {scNr, setScNr,  handleAddScenario, setIsSaved, isSaved} = scProps;
     const user = useContext(UserContext);
     const uid = user.uid;
 
@@ -35,15 +34,15 @@ const getAltFValues = (fValueList) =>{
     const groupFeatValue = fValueList[groupFeat];
     let newFeatValue;
     currentDce.features.forEach((feature) =>{
-        if (feature.featureName===groupFeat){
+        if (feature.featureName===groupFeat){//for the alternative values we need the other value of the dichotomous groupFeature
             if(feature.featureValue1===groupFeatValue){
                 newFeatValue = feature.featureValue2;}
             if(feature.featureValue2===groupFeatValue){
                 newFeatValue = feature.featureValue1;}
         }
     })
-    let altFValueList = {...fValueList};
-    altFValueList[groupFeat] = newFeatValue;
+    let altFValueList = {...fValueList};//other feature values remain the same
+    altFValueList[groupFeat] = newFeatValue;//groupFeature is replaced with alternative value
     return altFValueList
 }
 
@@ -55,9 +54,9 @@ const handleCreateAlt = (e)=>{
         console.log("currentSc.id: "+currentSc.id)
         let altFValues = getAltFValues(currentSc.fValues);
         console.log("altFValues after get: "+JSON.stringify(altFValues))
-    handleAddScenario(altFValues, currentSc.id)
+    handleAddScenario(altFValues, currentSc.id)//adds a new scenario with alternative fValues. 2nd param will be used for the altnr field in the new scenario
     .then((newId)=>{
-        currentSc["altnr"] = newId;
+        currentSc["altnr"] = newId;//the id of new scenario will be added to the current scenario before saving it
         saveScenario(currentSc);
     })
     }
@@ -106,8 +105,9 @@ setIsSaved(true);
 }
 }
 
+//saves scenario to the list and database
 const saveScenario = (scenario)=>{
-    let scIndex = currentDce.scList.findIndex(sc=>sc.id===scenario.id);
+    let scIndex = currentDce.scList.findIndex(sc=>sc.id===scenario.id);//find the index of the current sc in the list
     console.log("scIndex is: "+scIndex);
     currentDce.scList[scIndex] = scenario; //update scList with current scenario (save scenario)
     let response = pemFirestore.collection('users').doc(uid).collection('DceList').doc(dceId).collection('Scenarios');
@@ -116,7 +116,7 @@ const saveScenario = (scenario)=>{
 
 
 //gets html for this page
-const {scenarioHtml} = useScenarioDetailsHtml( currentDce, dceId, currentSc, setCurrentSc, scProps,  handleChosen, setChosen, handleSave, handleCreateAlt, handleEntry, chosen );
+const {scenarioHtml} = useScenarioDetailsHtml( currentDce, dceId, currentSc, setCurrentSc, setIsSaved, isSaved,  handleChosen, handleSave, handleCreateAlt, handleEntry );
 
 //Html to show in browser
     return (

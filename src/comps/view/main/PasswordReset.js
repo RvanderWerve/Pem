@@ -15,6 +15,7 @@ const PasswordReset = () => {//Component for reseting password
     }
   };
 
+  //sends reset email request
   const sendResetEmail = event => {
     event.preventDefault();
     pemAuth

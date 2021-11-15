@@ -1,3 +1,7 @@
+//Various functions related to determining which scenario's will be shown
+
+//returns list of random nrs that will be used as index nr for the scenario list. maxNr indicates the highest
+//that a nr can be. Length represents the amount of entries in the list. Numbers will only be used once in the list.
 const getRndNrList= (maxNr, length)=>{
   let usedNrs = [];
   let nrList = [];

@@ -1,4 +1,4 @@
-import  React, { useContext, useState, useEffect } from "react";
+import  React, { useContext, useEffect } from "react";
 import { Link, withRouter } from "react-router-dom";
 import {pemAuth} from "../../../firebase/config";
 import logo from "../../../img/pem50.png"
@@ -7,16 +7,13 @@ import { UserContext } from "../../../providers/UserProvider";
 
 
 function Navigation(props) {
-     //Nav component with menu items
+     //Nav component with menu items. User name is shown when logged in.
      const user = useContext(UserContext);
-    // const displayName = user.displayName;
- const [loggedInName, setLoggedInName] = useState('');
 
     useEffect(() => {
       let displayName;
       if(user){
       displayName = user.displayName
-      setLoggedInName(displayName);
       }
       else {displayName=''}
     }, [user])
@@ -50,7 +47,7 @@ function Navigation(props) {
           <Link to="/" className="nav-link" onClick = {() => {pemAuth.signOut()}}>Sign out ({user.displayName})</Link>
         </li>
         : <li key="2" className="nav-item">
-          <Link to="/" className="nav-link" to="/">Sign in</Link>
+          <Link to="/" className="nav-link" >Sign in</Link>
         </li>}
             </ul>
           </div>

@@ -11,7 +11,7 @@ useEffect(() => {
     let unsub = pemFirestore.collection('users').doc(user).collection('DceList').doc(dceId).collection('RawResults')
     .onSnapshot(snap => {
         let documents = [];
-        snap.forEach(doc => {
+        snap.forEach(doc => {//cycles through all result docs from the db and adds them to the results array
           documents.push({...doc.data().pref, id: doc.id});
         });
         setResults(documents);

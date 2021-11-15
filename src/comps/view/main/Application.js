@@ -15,12 +15,13 @@ function Application() {//loads user and routes to pages depending on user, or t
 
   useEffect(() => {
     if(user){
-      console.log("user must be there.. "+JSON.stringify(user))
+      console.log("user is logged in: "+JSON.stringify(user))
     let getDceList = new DceList(user);//creates new dceList object for this user
     setDceList(getDceList);
     }
   }, [user])
 
+  //dce can be run without logging in. Other dce pages only available for logged in users
   return (
         user ?
         <Switch>

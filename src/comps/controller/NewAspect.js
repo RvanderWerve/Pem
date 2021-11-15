@@ -1,34 +1,32 @@
 import React, { useState } from "react";
-import { pemFirestore } from "../../firebase/config";
-import { useParams} from "react-router-dom";
 
 
 export default function NewAspect({addAspect}) {
-  //Form for creating a new aspect
+  //component with form for creating new aspect
 
     const [aspectName, setAspectName] = useState(['name']);
     const [aspectDescr, setAspectDescr] = useState(['descr']);
-    const {userId, dceId } = useParams();
 
  
-  //Save aspect if all fields are filled in
+  //Saves aspect with name and description
     const saveAspect = (e)=>{
         e.preventDefault();
         addAspect( aspectName[0], aspectDescr[0]);        
   }
 
-    // handle name input change
+    // sets new name
     const handleNameInputChange = (e) => {
       const nameList = handleInputA(e, aspectName)
         setAspectName(nameList);
     }
 
-    // handle descr input change
+    // sets new description 
     const handleDescrInputChange = (e) => {
       const descrList = handleInputA(e, aspectDescr);
       setAspectDescr(descrList);
   }
 
+  //common method for changing name and description
   const handleInputA = (e, currentName) => {
     const name = e.target.value;
     const nameList = [...currentName];
@@ -38,7 +36,7 @@ export default function NewAspect({addAspect}) {
      );
 }
  
-  //html to show in browser
+  //html to show in browser. Form for entering name and description
   return (
         <div>
             <form className="form-inline">

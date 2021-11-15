@@ -1,6 +1,4 @@
 import { pemFirestore } from "../../firebase/config";
-import Dce from './dce';
-import GroupedDce from './groupedDce';
 
 class DceList {//Object representing a list of dce's. All dce's from a user will be created from this object
     constructor(user) {
@@ -16,7 +14,9 @@ class DceList {//Object representing a list of dce's. All dce's from a user will
             let dceId = dce.id;
             let dceIndex = this.list.findIndex(dce=>dce.id===dceId);
             this.list.splice(dceIndex, 1); //delete dce from dceList
-            clearCollection('Scenarios'); //clear scenarios from db
+            this.clearCollection(dceId, 'Scenarios'); //clear scenarios from db
+            this.clearCollection(dceId, 'AspectList'); //clear aspects from db
+            this.clearCollection(dceId, 'RawResults'); //clear results from db
             pemFirestore.collection('users').doc(this.uid).collection('DceList').doc(dceId.toString()).delete()
             .then(() => { console.log("Document with ID"+dceId+ "  successfully deleted!");
                         })
@@ -39,11 +39,23 @@ class DceList {//Object representing a list of dce's. All dce's from a user will
             return dce.name //returns the dce name
         }
 
-    const clearCollection = (path) =>{//helper function to delete subcollections in firebase. These are not deleted automatically
-        const ref = pemFirestore.collection(path)
+    this.clearCollection = (dceId, collection) =>{//helper function to delete subcollections in firebase. These are not deleted automatically
+      console.log("path is: "+collection)  
+      const ref = pemFirestore.collection('users').doc(this.uid).collection('DceList').doc(dceId.toString()).collection(collection)
         ref.onSnapshot((snapshot) => {
           snapshot.docs.forEach((doc) => {
+            if(collection==='AspectList'){//if AspectList collection is deleted, also delete Combis collection
+              ref.doc(doc.id).collection('Combis').onSnapshot((combiSnapshot)=>{
+                combiSnapshot.docs.forEach((combiDoc)=>{
+                  ref.doc(doc.id).collection('Combis').doc(combiDoc.id).delete()
+                  .then(()=>{console.log("Combi deleted with id "+combiDoc.id)})
+                })
+              })
+            }
             ref.doc(doc.id).delete()
+            .then(()=>{
+              console.log("Document deleted with id "+doc.id+ " from collection "+collection)
+            })
           })
         })
       }

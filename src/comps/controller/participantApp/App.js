@@ -15,7 +15,7 @@ import useSaveResult from './useSaveResult';
 import Dce from '../../model/dce';
 import GroupedDce from '../../model/groupedDce';
 
-function App() {
+function App() {//central component for running of a dce.
 
   const [answerList, setAnswerList] =useState([]);
   const [resultList, setResultList] = useState([]);
@@ -37,7 +37,7 @@ function App() {
   const [error, setError] = useState("");
   const {userId, dceId } = useParams();
   const {scenarios} = useFirestoreScenarios(userId, dceId); // load scenario's from database
-  const {scenarioListA, scenarioListB} = useGetGroupedScenarios(scenarios, nrQuestions, setFinished, isGrouped );
+  const {scenarioListA, scenarioListB} = useGetGroupedScenarios(scenarios, nrQuestions, isGrouped );
 
 
 useEffect(() => {
@@ -81,11 +81,12 @@ useEffect(()=>{
     setError("");
     setAnswerList([]);
     let fValuesArray = scenarios.map(sc=>sc["fValues"]);
-    let containsEmpty = false;
-    // let containsEmpty = fValuesArray.map(value=>Object.values(value)).find(x=>x==="");
-    console.log("fValuesArray: "+JSON.stringify(fValuesArray))
+    let arrayValues =  fValuesArray.map(value=>Object.values(value)[0]);
+    console.log("arrayValues: "+JSON.stringify(arrayValues));
+    let containsEmpty = arrayValues.includes("");
+    console.log("fValuesArray: "+JSON.stringify(fValuesArray));
     console.log("containsEmpty: "+containsEmpty)
-    if(containsEmpty){
+    if(containsEmpty){//check if all scenario's are complete, else set error
       setError("All scenario's must have data entered and saved - please contact the researcher.")
       return;                         
     } else if(!containsEmpty){
@@ -98,12 +99,12 @@ useEffect(()=>{
 
             let tempGrouped = doc.data().grouped;
             let dce;
-                if(doc.data().grouped){
+                if(doc.data().grouped){//create a dce object or GroupedDce object if applicable
                 dce = new GroupedDce(  doc.id, doc.data().name, doc.data().descr, doc.data().nrQuestions, doc.data().features, doc.data().grouped, doc.data().groupFeature );
                 } else {
                     dce = new Dce(doc.id, doc.data().name, doc.data().descr, doc.data().nrQuestions, doc.data().features, doc.data().grouped)
                 }
-            setCurrentDce(dce);
+            setCurrentDce(dce);//set current dce with loaded dce and set other variables
             setDceFeatures(doc.data().features);
             const tempDetails = {details: {grouped: doc.data().grouped, groupFeature: doc.data().groupFeature, nrQuestions: doc.data().nrQuestions}}
             setDceDetails(tempDetails);
@@ -112,9 +113,7 @@ useEffect(()=>{
             setNrQuestions(doc.data().nrQuestions);
             setIsGrouped(tempGrouped);
             setTodo(setDots(doc.data().nrQuestions))
-            if (scenarios.length!==0){
             }
-          }
         }).catch((error) => {
             console.error("Error loading document: ", error);
           })}

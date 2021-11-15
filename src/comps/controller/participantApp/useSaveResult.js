@@ -12,7 +12,7 @@ useEffect(() => {
     } else {
             let collRef = pemFirestore.collection('users').doc(userId).collection('DceList').doc(dceId).collection('RawResults')
             let tempResultList = [];
-            answerList.forEach((answer,i)=> {collRef.add(answer);   //save each result to firstore db for total result
+            answerList.forEach((answer,i)=> {collRef.add(answer);   //save each result as separate entry to firstore db for total result
                 tempResultList.push(answer.pref,i);
                 });
             setResultList(tempResultList);  //save this dce result as a list for personal result presentation

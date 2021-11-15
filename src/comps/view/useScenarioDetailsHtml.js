@@ -3,12 +3,9 @@ import { useEffect, useState } from "react";
 import UploadForm from "../controller/UploadForm";
 
 
-const useScenarioDetailsHtml = (currentDce, dceId, currentSc, setCurrentSc, scProps,  handleChosen, setChosen, handleSave, handleCreateAlt, handleEntry, chosen) => {
+const useScenarioDetailsHtml = (currentDce, dceId, currentSc, setCurrentSc, setIsSaved, isSaved ,  handleChosen, handleSave, handleCreateAlt, handleEntry) => {
    // creates html for formsfields and buttons for the NewScenario component
-
-// const {dceId} = dceProps;
-const {scNr,  setIsSaved, isSaved} = scProps;
-// const {handleChosen, handleSave, handleCreateAlt} = handleProps;
+const scNr = currentSc.id;
 const [scenarioHtml, setScenarioHtml] = useState([]);
 
 // set url for the image and save to chosenList
@@ -16,17 +13,14 @@ const setUrl = (url)=>{
     const tempSc = {...currentSc};
     tempSc["scImg"]=url;
     setCurrentSc(tempSc);
-    // const chosenList = [...chosen];
-    // chosenList[0]["data"]["scImg"]= url;
-    // setChosen(chosenList);
     setIsSaved(false)
 }
 
-useEffect(()=>{
+useEffect(()=>{//React hook for creating html for displaying scenario details and form field for changes
     console.log("useScDtl triggered")
 if(Object.keys(currentSc).length>0){
     let tempHtml = [];
-    tempHtml.push(<>
+    tempHtml.push(<div key={`scDtls ${currentSc.id}`}>
         {currentSc.id&&<div>
         {currentDce&&currentDce.grouped&&<h5>Paired with scenario nr: {currentSc.altnr}</h5>}
         <div key="form-row" className="form-row" > 
@@ -60,12 +54,12 @@ if(Object.keys(currentSc).length>0){
                <UploadForm dceId={dceId} scNr={scNr} setUrl={setUrl} />
                {currentSc.scImg&&<img src={currentSc.scImg} className='scImage' alt="scenario"/>}
                {currentDce&&currentDce.grouped&&!currentSc.altnr&&<input className="btn  btn-outline-success my-3" type="button" onClick={e=>handleCreateAlt(e)} value="Save & Create pair"></input>}
-               {(currentSc.altnr||!currentDce.grouped)&&<input className="btn  btn-outline-success my-3" onClick={(e)=>handleSave(e)} value="Save"></input>}
+               {(currentSc.altnr||!currentDce.grouped)&&<input type="button" className="btn  btn-outline-success my-3" onClick={(e)=>handleSave(e)} value="Save"></input>}
                </form>
-               {isSaved&&<div className={isSaved}>Scenario has been saved</div>}
+               {isSaved&&<div>Scenario has been saved</div>}
          </div>
          }
-         </>
+         </div>
         )
         setScenarioHtml(tempHtml);
          return   
