@@ -5,8 +5,8 @@ const StartForm = ({nrQuestions, setStarted, setQNr, handleAGChoice}) => {
 //Age and gender are requested. If left empty, the dce will start anyway.
 //Values are stored via HandleAGChoice
 
-const ageOptions = [{label: "younger than 25 years", value: "younger than 25 years"},{label: "25 years or older", value: "25 years or older"}];
-const genderOptions = [{label: "female", value: "female"},{label: "male", value: "male"}]
+     const ageOptions = [{label: "younger than 25 years", value: "younger than 25 years"},{label: "25 years or older", value: "25 years or older"}];
+     const genderOptions = [{label: "female", value: "female"},{label: "male", value: "male"}]
     
      return ( 
        <div className="my-5"> 

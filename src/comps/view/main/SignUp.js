@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { pemAuth, signInWithGoogle, generateUserDocument } from "../../../firebase/config";
+import { pemAuth, signInWithGoogle, generateUserDocument } from "../../model/firebase/config";
 
 const SignUp = () => { //Sign up page. Register either via mail address or Google account
   const [email, setEmail] = useState("");
@@ -14,14 +14,15 @@ const SignUp = () => { //Sign up page. Register either via mail address or Googl
         const {user} = await pemAuth.createUserWithEmailAndPassword(email, password);
         generateUserDocument(user, {displayName});
       }
-      catch(error){
+    catch(error){
         setError('Error Signing up with email and password');
       }
     setEmail("");
     setPassword("");
     setDisplayName("");
   };
-  const onChangeHandler = event => {
+
+  const onChangeHandler = event => {//handles form entry for signing up
     const { name, value } = event.currentTarget;
     if (name === "userEmail") {
       setEmail(value);

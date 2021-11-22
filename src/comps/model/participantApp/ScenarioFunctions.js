@@ -20,7 +20,7 @@ const getRndNrList= (maxNr, length)=>{
   return nrList
 }
 
-  //get 2 random scenarios, no repeats and A!=B
+//get 2 random scenarios, no repeats and A!=B
 const getRandomScenarios = (scenarios, prevRandomA, setPrevRandomA)=>{
     const maxNr = scenarios.length;
     const {RandomNrA, RandomNrB} = GetUnusedRndNrs(maxNr, prevRandomA, setPrevRandomA);

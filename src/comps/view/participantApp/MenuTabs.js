@@ -6,28 +6,28 @@ import SwipeableViews from 'react-swipeable-views';
 import '../../../index.css';
 import Option from './Option';
 
-  const MenuTabs = ({handleClick, sc1, sc2, dceDescr, ageGender})=>{
+const MenuTabs = ({handleClick, sc1, sc2, dceDescr, ageGender})=>{
 //Component for displaying choices in swipable tabs for smartphones
 
-    const [index, setIndex] = useState(0);
-    const [value, setValue] = useState(0);
+  const [index, setIndex] = useState(0);
+  const [value, setValue] = useState(0);
     
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (event, newValue) => {//handles change of tab
     setValue(newValue)
     setIndex(
       newValue,
     );
     };
 
-  const handleChangeIndex = (index) => {
+  const handleChangeIndex = (index) => {//handles change of tab index
     setIndex(
       index,
     );
     setValue (index);
   };
 
-  const styles = {
+  const styles = {//styles for tab
     tabs: {
       background: '#fff',
       },

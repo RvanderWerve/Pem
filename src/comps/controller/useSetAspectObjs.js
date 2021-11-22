@@ -1,5 +1,5 @@
 import { useState, useEffect} from 'react';
-import { pemFirestore } from "../../firebase/config";
+import { pemFirestore } from "../model/firebase/config";
 
 export default function useSetAspectObjs(userId, dceId, currentDce) {
     // Loads aspects from database and return them as objects with combi's including filters for 'in favor' and 'against'
@@ -28,24 +28,25 @@ export default function useSetAspectObjs(userId, dceId, currentDce) {
                         let newFavorFilter = {fName: currentDce.groupFeature, fValue: snap.data().groupValue};//include groupfeature as favorfilter
                         if(snap.data().ageGender){
                             if(snap.data().ageGender.age!==""){//if age string is not empty create agefilter
-                        let ageFilter = {fName: "age", fValue: snap.data().ageGender.age};
-                        favorFilters.push(ageFilter);
-                        againstFilters.push(ageFilter);
-                    }
-                    if(snap.data().ageGender.gender!==""){//if gender string is not empty create gender filter
-                        let genderFilter = {fName: "gender", fValue: snap.data().ageGender.gender};
-                        favorFilters.push(genderFilter);
-                        againstFilters.push(genderFilter);
-                        }}
+                                let ageFilter = {fName: "age", fValue: snap.data().ageGender.age};
+                                favorFilters.push(ageFilter);
+                                againstFilters.push(ageFilter);
+                            }
+                            if(snap.data().ageGender.gender!==""){//if gender string is not empty create gender filter
+                                let genderFilter = {fName: "gender", fValue: snap.data().ageGender.gender};
+                                favorFilters.push(genderFilter);
+                                againstFilters.push(genderFilter);
+                            }
+                        }
                         favorFilters.push(newFavorFilter);
                         let newAgainstValue = "";//include opposite value of groupfeature as filter in againstfilters
                         dceFeatures.forEach((feature,i) =>{
-                        if (feature.featureName===currentDce.groupFeature){
-                            if(feature.featureValue1===snap.data().groupValue){
-                                newAgainstValue = feature.featureValue2;}
-                            if(feature.featureValue2===snap.data().groupValue){
-                                newAgainstValue = feature.featureValue1;}
-                        }
+                            if (feature.featureName===currentDce.groupFeature){
+                                if(feature.featureValue1===snap.data().groupValue){
+                                    newAgainstValue = feature.featureValue2;}
+                                if(feature.featureValue2===snap.data().groupValue){
+                                    newAgainstValue = feature.featureValue1;}
+                            }
                         })
                         let newAgainstFilter = {fName: currentDce.groupFeature, fValue: newAgainstValue};
                         againstFilters.push(newAgainstFilter);
@@ -54,14 +55,14 @@ export default function useSetAspectObjs(userId, dceId, currentDce) {
                         tempFilters.push(tempFilter);;
                     })
                     let newTempObjs = [...tempAspectObjs]
-                        let index = tempAspectObjs.findIndex(obj=>obj.id===doc.id);//find current aspect in list of aspectObjects
-                        newTempObjs[index]['combis'] = tempFilters;//set filters to current aspectObject
-                        setAspectObjs(newTempObjs);
-                        })
+                    let index = tempAspectObjs.findIndex(obj=>obj.id===doc.id);//find current aspect in list of aspectObjects
+                    newTempObjs[index]['combis'] = tempFilters;//set filters to current aspectObject
+                    setAspectObjs(newTempObjs);
+                })
             })
-         }).catch((err)=>{
+        }).catch((err)=>{
             console.log('Error with loading document'+err);
-        })
+            })
         return
     }},[userId, dceId, currentDce])
 

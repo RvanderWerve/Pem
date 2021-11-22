@@ -16,124 +16,121 @@ export default function NewDceForm({showNewDceForm, dceList, setDceListChanged }
     const uid = user.uid;
 
     //Check if feature names and values are all filled in before save
-  const featuresNotNull = (item)=>{
-if(item.featureName==null||item.featureName===""){
-alert("Please fill in all feature names");
-return false;
-}
-if(item.featureValue1==null||item.featureValue1===""||item.featureValue2==null||item.featureValue2===""){
-  alert("Please fill in all feature values");
-  return false;
-}
-return true;
-  }
+    const featuresNotNull = (item)=>{
+      if(item.featureName==null||item.featureName===""){
+        alert("Please fill in all feature names");
+        return false;
+      }
+      if(item.featureValue1==null||item.featureValue1===""||item.featureValue2==null||item.featureValue2===""){
+        alert("Please fill in all feature values");
+        return false;
+      }
+      return true;
+      }
 
-//helper for dceNotNull check
-  const existsName = (name => newDce.name===name);
+    //helper for dceNotNull check
+    const existsName = (name => newDce.name===name);
 
-//Check if dce name and number of questions are all filled in before save. Also check if dce name is unique
-  const dceNotNull = ()=>{
-    let name=newDce.name;
-    console.log("field not null check, dceName: "+name)
-    if(name===undefined||name==="" || (dceList.list.length>0 &&dceList.nameList().some(existsName))){
-      alert("Fill in a unique DCE name");
-      return false;
+    //Check if dce name and number of questions are all filled in before save. Also check if dce name is unique
+    const dceNotNull = ()=>{
+      let name=newDce.name;
+      if(name===undefined||name==="" || (dceList.list.length>0 &&dceList.nameList().some(existsName))){
+        alert("Fill in a unique DCE name");
+        return false;
+      }
+      if(newDce.nrQuestions<=0||!newDce.nrQuestions){
+        alert("Fill in the number of questions (higher than 0) the participant has to answer in the DCE");
+        return false;
+      }
+      return true;
     }
-    if(newDce.nrQuestions<=0||!newDce.nrQuestions){
-      alert("Fill in the number of questions (higher than 0) the participant has to answer in the DCE");
-      return false;
-    }
-    return true;
-  }
 
-  //Check if groupValue is not null 
-  const groupValueNotNull = ()=>{
-    if (groupChecked&&groupValue===null){
-      alert("Please select a value for the group feature");
-      return false;
-    }
-    return true;
-  }
+      //Check if groupValue is not null 
+      const groupValueNotNull = ()=>{
+        if (groupChecked&&groupValue===null){
+          alert("Please select a value for the group feature");
+          return false;
+        }
+        return true;
+      }
 
-  //Save dce if all fields are filled in
-    const saveDce = (e)=>{
-        e.preventDefault();
-        if(inputList.every(featuresNotNull)&&dceNotNull()&&groupValueNotNull()){
-          let dce;
-                if(groupChecked){
+     //Save dce if all fields are filled in
+      const saveDce = (e)=>{
+          e.preventDefault();
+          if(inputList.every(featuresNotNull)&&dceNotNull()&&groupValueNotNull()){
+              let dce;
+              if(groupChecked){
                 dce = new GroupedDce( null, newDce.name, newDce.descr, newDce.nrQuestions, inputList, groupChecked, groupValue, uid);
                 } else {
-                    dce = new Dce( null, newDce.name, newDce.descr, newDce.nrQuestions, inputList, groupChecked, uid)
+                dce = new Dce( null, newDce.name, newDce.descr, newDce.nrQuestions, inputList, groupChecked, uid)
                 }
-            dceList.list&&dceList.addDce(dce)//method that adds the newly created dce to the dceList and database
-            .then(dceId=>{setDceListChanged(dceId);//flag to refresh dce list on screen
-              console.log("return dceId: "+dceId);
-              });
-
-            showNewDceForm();
-        }
-    }
+              dceList.list&&dceList.addDce(dce)//method that adds the newly created dce to the dceList and database
+              .then(dceId=>{setDceListChanged(dceId);//flag to refresh dce list on screen
+                });
+              showNewDceForm();
+          }
+      }
 
  
     
-        //Handles entries from input fields
-    const handleEntry = (e)=>{
-      e.preventDefault();
-      const {name, value} = e.target;
-      setNewDce(newDce=>({...newDce, [name]: value}));
-  }
+      //Handles entries from input fields
+      const handleEntry = (e)=>{
+        e.preventDefault();
+        const {name, value} = e.target;
+        setNewDce(newDce=>({...newDce, [name]: value}));
+      }
 
-    // handle nr questions input change
-    const handleNrQuestionsInput = (e) =>{
-      e.preventDefault();
-      let nrQuestions = 'nrQuestions'
-      const nrString = e.target.value;
-      let nrQ = 0;
-      nrQ = Number(nrString);//converts input to nr
-      setNrQuestions(nrQ);//sets nr questions for this dce
-      setNewDce(newDce=>({...newDce, [nrQuestions]: nrQ}));//adds nr questions to the new dce
-    }
+      // handle nr questions input change
+      const handleNrQuestionsInput = (e) =>{
+        e.preventDefault();
+        let nrQuestions = 'nrQuestions'
+        const nrString = e.target.value;
+        let nrQ = 0;
+        nrQ = Number(nrString);//converts input to nr
+        setNrQuestions(nrQ);//sets nr questions for this dce
+        setNewDce(newDce=>({...newDce, [nrQuestions]: nrQ}));//adds nr questions to the new dce
+        }
 
-     // handle feature input change
-  const handleInputChange = (e, index) => {
-    e.preventDefault();
-    const { name, value } = e.target;
-    const list = [...inputList];
-    list[index][name] = value;
-    setInputList(list);
-  };
+      // handle feature input change
+      const handleInputChange = (e, index) => {
+        e.preventDefault();
+        const { name, value } = e.target;
+        const list = [...inputList];
+        list[index][name] = value;
+        setInputList(list);
+      };
  
-  // deletes feature in the new dce form
-  const handleRemoveClick = (e, index) => {
-    e.preventDefault();
-    const list = [...inputList];
-    list.splice(index, 1);
-    setInputList(list);
-  };
+      // deletes feature in the new dce form
+      const handleRemoveClick = (e, index) => {
+        e.preventDefault();
+        const list = [...inputList];
+        list.splice(index, 1);
+        setInputList(list);
+      };
  
-  // Adds another feature in the form
-  const handleAddClick = (e) => {
-    e.preventDefault();
-    setInputList([...inputList, { featureName: null , featureValue1: null, featureValue2: null}]);
-  }
+      // Adds another feature in the form
+      const handleAddClick = (e) => {
+        e.preventDefault();
+        setInputList([...inputList, { featureName: null , featureValue1: null, featureValue2: null}]);
+      }
 
-  // checkbox for group feature.Inverts value
-  const handleCheckbox = ()=>{
-   setGroupChecked(!groupChecked);
-  }
+      // checkbox for group feature.Inverts value
+      const handleCheckbox = ()=>{
+        setGroupChecked(!groupChecked);
+      }
 
-  //combine some of the properties that are required for getting the html
-  const inputProps =  {handleEntry, handleInputChange, handleRemoveClick, handleNrQuestionsInput, inputList};
-  const groupProps = {setGroupValue, groupChecked, groupValue, handleCheckbox};
-  const miscProps = {handleAddClick,  saveDce,  nrQuestions};
+      //combine some of the properties that are required for getting the html
+      const inputProps =  {handleEntry, handleInputChange, handleRemoveClick, handleNrQuestionsInput, inputList};
+      const groupProps = {setGroupValue, groupChecked, groupValue, handleCheckbox};
+      const miscProps = {handleAddClick,  saveDce,  nrQuestions};
 
-  //gets html for this page
-const {dceHtml} = useNewDceHtml(inputProps, groupProps, miscProps, newDce);
+      //gets html for this page
+      const {dceHtml} = useNewDceHtml(inputProps, groupProps, miscProps, newDce);
 
-  //html to show in browser
-  return (
-        <div>
-          {dceHtml}
-        </div>
-    )
+      //html to show in browser
+      return (
+            <div>
+              {dceHtml}
+            </div>
+        )
 }

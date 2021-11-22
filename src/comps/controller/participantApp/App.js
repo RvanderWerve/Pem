@@ -6,12 +6,12 @@ import PcView from '../../view/participantApp/PcView';
 import { useState, useEffect } from "react";
 import { useParams} from "react-router-dom";
 import StartForm from '../../view/participantApp/StartForm';
-import { pemFirestore } from '../../../firebase/config';
-import useFirestoreScenarios from '../../../firebase/useFirestoreScenarios';
+import { pemFirestore } from '../../model/firebase/config';
+import useFirestoreScenarios from '../../model/firebase/useFirestoreScenarios';
 import ParticipantResults from '../../view/participantApp/ParticipantResults';
-import { setDots, calcDots } from './DotFunctions';
+import { setDots, calcDots } from '../../model/participantApp/DotFunctions';
 import useGetGroupedScenarios from './useGetGroupedScenarios'
-import useSaveResult from './useSaveResult';
+import useSaveResult from '../../model/participantApp/useSaveResult';
 import Dce from '../../model/dce';
 import GroupedDce from '../../model/groupedDce';
 
@@ -40,105 +40,103 @@ function App() {//central component for running of a dce.
   const {scenarioListA, scenarioListB} = useGetGroupedScenarios(scenarios, nrQuestions, isGrouped );
 
 
-useEffect(() => {
-  //initialize materialize - css library
-  M.AutoInit();
-});
+  useEffect(() => {
+    //initialize materialize - css library
+    M.AutoInit();
+  });
 
-useEffect(()=>{//creates two random lists with scenario's to show. 
-  if(scenarioListB&&scenarioListA){
-  setSc1(scenarioListA[qNr]);//the qNr (question nr) determines which scenario is shown as sc1 and sc2 
-  setSc2(scenarioListB[qNr]);
+  useEffect(()=>{//creates two random lists with scenario's to show. 
+    if(scenarioListB&&scenarioListA){
+      setSc1(scenarioListA[qNr]);//the qNr (question nr) determines which scenario is shown as sc1 and sc2 
+      setSc2(scenarioListB[qNr]);
+    }
+  },[scenarioListA, scenarioListB, qNr])
+
+  //Handle click from age and gender select in startform
+  const handleAGChoice = (value, id) =>{
+    let tempAgeGender = ageGender;
+    tempAgeGender[id] = value;
+    setAgeGender(tempAgeGender);
   }
-},[scenarioListA, scenarioListB, qNr])
 
-//Handle click from age and gender select in startform
-const handleAGChoice = (value, id) =>{
-  let tempAgeGender = ageGender;
-  tempAgeGender[id] = value;
-  setAgeGender(tempAgeGender);
-}
-
-// handle click from choose button
-  const handleClick = (choiceValue) => {
-    if(choiceValue){
-    let tempListA =[...answerList];
-    tempListA.push(choiceValue);
-    setAnswerList(tempListA);
-    }//if choiceValue ==0, next scenario's are selected and answers are not recorded.
-    // SettingScenarios(isGrouped);
-    if(qNr+2>nrQuestions){
-      setFinished(true)}     //finishes if nr of questions as defined in Dce is reached
-    setQNr(qNr=>qNr+1);
-    calcDots(done, setDone, todo, setTodo, qNr); //takes care of indicator dots below the scenario's
-   }
+  // handle click from choose button
+    const handleClick = (choiceValue) => {
+      if(choiceValue){
+        let tempListA =[...answerList];
+        tempListA.push(choiceValue);
+        setAnswerList(tempListA);
+      }//if choiceValue ==0, next scenario's are selected and answers are not recorded.
+      // SettingScenarios(isGrouped);
+      if(qNr+2>nrQuestions){
+        setFinished(true)
+        }     //finishes if nr of questions as defined in Dce is reached
+      setQNr(qNr=>qNr+1);
+      calcDots(done, setDone, todo, setTodo, qNr); //takes care of indicator dots below the scenario's
+    }
 
 
-//load dce details from database
-//execute at startup and upon change of scenarios
-useEffect(()=>{
-  if(scenarios&&userId&&dceId){ //only query dB if id's are known
-    setError("");
-    setAnswerList([]);
-    let fValuesArray = scenarios.map(sc=>sc["fValues"]);
-    let arrayValues =  fValuesArray.map(value=>Object.values(value)[0]);
-    console.log("arrayValues: "+JSON.stringify(arrayValues));
-    let containsEmpty = arrayValues.includes("");
-    console.log("fValuesArray: "+JSON.stringify(fValuesArray));
-    console.log("containsEmpty: "+containsEmpty)
-    if(containsEmpty){//check if all scenario's are complete, else set error
-      setError("All scenario's must have data entered and saved - please contact the researcher.")
-      return;                         
-    } else if(!containsEmpty){
-        let response = pemFirestore.collection('users').doc(userId).collection('DceList').doc(dceId);
-        response.get()
-        .then(doc=>{//for grouped scenario's the nr of scenario's must be at least twice the nr of questions. For ungrouped the minimum nr scenario's ==nrQuestions with minimum of 2
-          if((doc.data().grouped&&scenarios.length<2*doc.data().nrQuestions)||(!doc.data().grouped&&(scenarios.length<doc.data().nrQuestions||scenarios.length<2))){
-            setError("The scenario's are incomplete - please contact the researcher.");
-          }else{setError("");
-
-            let tempGrouped = doc.data().grouped;
-            let dce;
-                if(doc.data().grouped){//create a dce object or GroupedDce object if applicable
-                dce = new GroupedDce(  doc.id, doc.data().name, doc.data().descr, doc.data().nrQuestions, doc.data().features, doc.data().grouped, doc.data().groupFeature );
+  //load dce details from database
+  //execute at startup and upon change of scenarios
+  useEffect(()=>{
+    if(scenarios&&userId&&dceId){ //only query dB if id's are known
+      setError("");
+      setAnswerList([]);
+      let fValuesArray = scenarios.map(sc=>sc["fValues"]);
+      let arrayValues =  fValuesArray.map(value=>Object.values(value)[0]);
+      let containsEmpty = arrayValues.includes("");
+      if(containsEmpty){//check if all scenario's are complete, else set error
+        setError("All scenario's must have data entered and saved - please contact the researcher.")
+        return;                         
+      } else if(!containsEmpty){
+          let response = pemFirestore.collection('users').doc(userId).collection('DceList').doc(dceId);
+          response.get()
+          .then(doc=>{//for grouped scenario's the nr of scenario's must be at least twice the nr of questions. For ungrouped the minimum nr scenario's ==nrQuestions with minimum of 2
+            if((doc.data().grouped&&scenarios.length<2*doc.data().nrQuestions)||(!doc.data().grouped&&(scenarios.length<doc.data().nrQuestions||scenarios.length<2))){
+              setError("The scenario's are incomplete - please contact the researcher.");
+            }else{
+              setError("");
+              let tempGrouped = doc.data().grouped;
+              let dce;
+              if(doc.data().grouped){//create a dce object or GroupedDce object if applicable
+                  dce = new GroupedDce(  doc.id, doc.data().name, doc.data().descr, doc.data().nrQuestions, doc.data().features, doc.data().grouped, doc.data().groupFeature );
                 } else {
-                    dce = new Dce(doc.id, doc.data().name, doc.data().descr, doc.data().nrQuestions, doc.data().features, doc.data().grouped)
-                }
-            setCurrentDce(dce);//set current dce with loaded dce and set other variables
-            setDceFeatures(doc.data().features);
-            const tempDetails = {details: {grouped: doc.data().grouped, groupFeature: doc.data().groupFeature, nrQuestions: doc.data().nrQuestions}}
-            setDceDetails(tempDetails);
-            setDceDescr(doc.data().descr);
-            setDceNameEdit(doc.data().name);
-            setNrQuestions(doc.data().nrQuestions);
-            setIsGrouped(tempGrouped);
-            setTodo(setDots(doc.data().nrQuestions))
-            }
-        }).catch((error) => {
-            console.error("Error loading document: ", error);
-          })}
-  }},[scenarios, userId, dceId]);
+                      dce = new Dce(doc.id, doc.data().name, doc.data().descr, doc.data().nrQuestions, doc.data().features, doc.data().grouped)
+                      }
+              setCurrentDce(dce);//set current dce with loaded dce and set other variables
+              setDceFeatures(doc.data().features);
+              const tempDetails = {details: {grouped: doc.data().grouped, groupFeature: doc.data().groupFeature, nrQuestions: doc.data().nrQuestions}}
+              setDceDetails(tempDetails);
+              setDceDescr(doc.data().descr);
+              setDceNameEdit(doc.data().name);
+              setNrQuestions(doc.data().nrQuestions);
+              setIsGrouped(tempGrouped);
+              setTodo(setDots(doc.data().nrQuestions))
+              }
+          }).catch((error) => {
+              console.error("Error loading document: ", error);
+            })}
+    }},[scenarios, userId, dceId]);
 
-//save results when finished 
- useSaveResult(finished, answerList, userId, dceId, setResultList); 
+  //save results when finished 
+  useSaveResult(finished, answerList, userId, dceId, setResultList); 
 
-// Show in the browser. Startform before begin, MenuTabs for mobile, PcView for pc, 
-// done and todo are progress indicator. Show ParticpantResult when finished.
+  // Show in the browser. Startform before begin, MenuTabs for mobile, PcView for pc, 
+  // done and todo are progress indicator. Show ParticpantResult when finished.
   return (
-    <div>
-      <Modals sc1={sc1} sc2={sc2}/>
-      {!finished&&!started&&<StartForm nrQuestions={nrQuestions} setStarted={setStarted} setQNr={setQNr} handleAGChoice={handleAGChoice}/>}
-      {!finished &&started&&!error && <MenuTabs handleClick = {handleClick} sc1={sc1} sc2={sc2} dceDescr={dceDescr} ageGender={ageGender}/>} 
-      {!finished &&started&&!error && sc1&&sc2&& <PcView handleClick = {handleClick} sc1={sc1} sc2={sc2} dceDescr={dceDescr} ageGender={ageGender}/>}
-      {!finished &&started&&!error&&<Fab />}
-      {!finished &&started&&!error&& <div className="footer">
-         {done}
-         {todo}
-      </div>}
-      {finished &&started&&!error&&userId&&dceId&& <ParticipantResults resultList={resultList} currentDce={currentDce} dceDetails={dceDetails} dceNameEdit = {dceNameEdit} dceId={dceId} dceFeatures={dceFeatures} userId={userId}/>}
-      {error&&<div className="text-danger mt-5"><h4>Error: {error}</h4></div>}
-    </div>
-  )
+      <div>
+        <Modals sc1={sc1} sc2={sc2}/>
+        {!finished&&!started&&<StartForm nrQuestions={nrQuestions} setStarted={setStarted} setQNr={setQNr} handleAGChoice={handleAGChoice}/>}
+        {!finished &&started&&!error && <MenuTabs handleClick = {handleClick} sc1={sc1} sc2={sc2} dceDescr={dceDescr} ageGender={ageGender}/>} 
+        {!finished &&started&&!error && sc1&&sc2&& <PcView handleClick = {handleClick} sc1={sc1} sc2={sc2} dceDescr={dceDescr} ageGender={ageGender}/>}
+        {!finished &&started&&!error&&<Fab />}
+        {!finished &&started&&!error&& <div className="footer">
+          {done}
+          {todo}
+        </div>}
+        {finished &&started&&!error&&userId&&dceId&& <ParticipantResults resultList={resultList} currentDce={currentDce} dceDetails={dceDetails} dceNameEdit = {dceNameEdit} dceId={dceId} dceFeatures={dceFeatures} userId={userId}/>}
+        {error&&<div className="text-danger mt-5"><h4>Error: {error}</h4></div>}
+      </div>
+    )
 }
 
 export default App;

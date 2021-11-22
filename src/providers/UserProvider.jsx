@@ -1,5 +1,5 @@
 import React, { Component, createContext } from "react";
-import { pemAuth, generateUserDocument } from '../firebase/config';
+import { pemAuth, generateUserDocument } from '../comps/model/firebase/config';
 
 export const UserContext = createContext({ user: null });
 

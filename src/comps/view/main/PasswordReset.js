@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { pemAuth } from "../../../firebase/config";
+import { pemAuth } from "../../model/firebase/config";
 import { Link } from "react-router-dom";
 
 const PasswordReset = () => {//Component for reseting password
@@ -9,7 +9,6 @@ const PasswordReset = () => {//Component for reseting password
 
   const onChangeHandler = event => {
     const { name, value } = event.currentTarget;
-
     if (name === "userEmail") {
       setEmail(value);
     }
@@ -18,16 +17,16 @@ const PasswordReset = () => {//Component for reseting password
   //sends reset email request
   const sendResetEmail = event => {
     event.preventDefault();
-    pemAuth
-      .sendPasswordResetEmail(email)
-      .then(() => {
-          setEmailHasBeenSent(true);
-        setTimeout(() => {setEmailHasBeenSent(false)}, 3000);
-      })
-      .catch(() => {
-        setError("Error resetting password");
-      });
+    pemAuth.sendPasswordResetEmail(email)
+    .then(() => {
+        setEmailHasBeenSent(true);
+      setTimeout(() => {setEmailHasBeenSent(false)}, 3000);
+    })
+    .catch(() => {
+      setError("Error resetting password");
+    });
   };
+  
   return (
     <div className="row justify-content-center">
       <h1 className="text-xl text-center font-bold mb-3">

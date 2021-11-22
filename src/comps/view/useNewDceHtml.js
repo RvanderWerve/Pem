@@ -43,12 +43,7 @@ tempHtml.push(
               onChange={e => handleInputChange(e, i)}
             />             
             </div>
-            <div className="col col-xs-1">
-            {inputList.length !== 1 && <button
-                className="btn btn-sm btn-outline-success mb-2"
-                onClick={(e) => handleRemoveClick(e, i)}><i className="material-icons mat-icon">delete_forever</i></button>}
-              </div>
-
+           
               <div >
               <label htmlFor={i+"fV1"} className="">Feature value 1: </label>
             <input
@@ -75,6 +70,11 @@ tempHtml.push(
               onChange={e => handleInputChange(e, i)}
             />             
             </div>
+            <div className="col col-xs-1">
+            {inputList.length !== 1 && <button
+                className="btn btn-sm btn-outline-success mb-2"
+                onClick={(e) => handleRemoveClick(e, i)}><i className="material-icons mat-icon">delete_forever</i></button>}
+              </div>
               <div>
               {inputList.length - 1 === i && <button className="btn btn-sm btn-outline-info mb-2" onClick={(e)=>handleAddClick(e)}>Add another feature</button>}</div>
            </div>

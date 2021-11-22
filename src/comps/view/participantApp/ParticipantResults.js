@@ -4,11 +4,11 @@ import useGetResultHtml from '../useGetResultHtml';
 import ResultDce from "../ResultDce";
 
 
-export default function ParticipantResults({resultList, currentDce, dceId, userId}) {
+export default function ParticipantResults({resultList, currentDce, dceId, userId}) {//Displays resultpage for particpant after completing dce
     const {aspectObjs} = useSetAspectObjs(userId, dceId, currentDce);
-    const {resultHtml} = useGetResultHtml(aspectObjs, resultList);
+    const {resultHtml} = useGetResultHtml(aspectObjs, resultList);//calculates personal result
 
-    return (
+    return (// Shows personal result on the left and overall result on the right (on large screen, otherwise below eachother)
         <div className="my-5"> 
             <p>Thank you for completing this experiment!</p>
             {/*only show results if the dce is grouped*/}

@@ -1,11 +1,12 @@
-import { pemFirestore } from "../../firebase/config";
+import { pemFirestore } from "./firebase/config";
 
 class DceList {//Object representing a list of dce's. All dce's from a user will be created from this object
     constructor(user) {
         this.uid=user.uid;
         this.list = [];
+
         this.nameList=function(){//Namelist used to check if a new dce name is unique
-            let names = [];
+           let names = [];
            this.list.forEach(dce=>names.push(dce.name));
            return names;
             }
@@ -40,9 +41,9 @@ class DceList {//Object representing a list of dce's. All dce's from a user will
         }
 
     this.clearCollection = (dceId, collection) =>{//helper function to delete subcollections in firebase. These are not deleted automatically
-      console.log("path is: "+collection)  
       const ref = pemFirestore.collection('users').doc(this.uid).collection('DceList').doc(dceId.toString()).collection(collection)
-        ref.onSnapshot((snapshot) => {
+        ref.get()
+        .then((snapshot) => {
           snapshot.docs.forEach((doc) => {
             if(collection==='AspectList'){//if AspectList collection is deleted, also delete Combis collection
               ref.doc(doc.id).collection('Combis').onSnapshot((combiSnapshot)=>{

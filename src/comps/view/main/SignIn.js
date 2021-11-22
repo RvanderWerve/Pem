@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import { Link } from "react-router-dom";
-import { signInWithGoogle } from "../../../firebase/config";
-import { pemAuth } from "../../../firebase/config";
+import { signInWithGoogle } from "../../model/firebase/config";
+import { pemAuth } from "../../model/firebase/config";
 
 const SignIn = () => {//Sign in page. Provides methodes for signing in with email or google
     const [email, setEmail] = useState('');
@@ -17,9 +17,8 @@ const SignIn = () => {//Sign in page. Provides methodes for signing in with emai
                     });
     };
 
-      const onChangeHandler = (event) => {
+    const onChangeHandler = (event) => {
           const {name, value} = event.currentTarget;
-
           if(name === 'userEmail') {
               setEmail(value);
           }

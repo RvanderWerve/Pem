@@ -1,7 +1,7 @@
 import React from 'react';
 import SwipeableViews from 'react-swipeable-views';
 
-const styles = {
+const styles = {//sets styles for the tabs
   slide: {
     padding: 15,
     minHeight: 100,

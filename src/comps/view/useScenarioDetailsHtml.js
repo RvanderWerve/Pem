@@ -17,7 +17,6 @@ const setUrl = (url)=>{
 }
 
 useEffect(()=>{//React hook for creating html for displaying scenario details and form field for changes
-    console.log("useScDtl triggered")
 if(Object.keys(currentSc).length>0){
     let tempHtml = [];
     tempHtml.push(<div key={`scDtls ${currentSc.id}`}>
@@ -26,7 +25,6 @@ if(Object.keys(currentSc).length>0){
         <div key="form-row" className="form-row" > 
         <h6>Features</h6>
         <div className="row">
-            {console.log("inside features, fValues are:.."+JSON.stringify(currentSc.fValues))}
       {currentSc.fValues&&currentDce.features&&currentDce.features.map((feature,i) =>{
       let options =[{label: feature.featureValue1, value: feature.featureValue1},
         {label: feature.featureValue2, value: feature.featureValue2}];

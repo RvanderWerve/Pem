@@ -21,18 +21,18 @@ const UploadForm = ({ dceId, scNr, setUrl }) => { //Component for uploading imag
 
   //Html to show in browser. Show progressbar while loading
   return (
-    <div>
-      <label>
-        <input type="file" style={{height: 0, width: 0}} onChange={handleChange} />
-        <span className="btn btn-sm btn-outline-info mb-3">Upload image</span>
-      </label>
-      <div className="output">
-        { error && <div className="error">{ error }</div>}
-        { file && <div>{ file.name }</div> }
-        { file && <ProgressBar file={file} setFile={setFile} dceId={dceId} scNr={scNr} setUrl={setUrl}/> }
+      <div>
+        <label>
+          <input type="file" style={{height: 0, width: 0}} onChange={handleChange} />
+          <span className="btn btn-sm btn-outline-info mb-3">Upload image</span>
+        </label>
+        <div className="output">
+          { error && <div className="error">{ error }</div>}
+          { file && <div>{ file.name }</div> }
+          { file && <ProgressBar file={file} setFile={setFile} dceId={dceId} scNr={scNr} setUrl={setUrl}/> }
+        </div>
       </div>
-    </div>
-      );
+    );
 }
 
 export default UploadForm;

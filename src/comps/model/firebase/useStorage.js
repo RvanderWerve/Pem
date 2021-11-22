@@ -16,9 +16,9 @@ const useStorage = (file ) => {//Connect to firebase storage for storing images
     }, (err) => {
       setError(err);
     }, async () => {
-      const url = await storageRef.getDownloadURL();
-      setUrl(url);
-    });
+        const url = await storageRef.getDownloadURL();
+        setUrl(url);
+      });
   }, [file]);//triggers upon file
 
   return { progress, url, error };

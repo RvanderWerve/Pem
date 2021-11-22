@@ -5,7 +5,7 @@ const Modals = ({sc1, sc2}) => {
     return ( 
         <div>
             
-         {/* //Modal for showing additional explanation during dce */}
+            {/* //Modal for showing additional explanation during dce */}
             <div id="modal1" data-id="modal1" className="modal">
                 <div className="modal-content black-text modal-close center">
                     <div className="flow-text"  >
